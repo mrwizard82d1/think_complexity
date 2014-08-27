@@ -1,3 +1,6 @@
+from abc import abstractmethod
+
+
 class Graph(object):
     def order(self):
         raise NotImplementedError
@@ -31,15 +34,40 @@ class Edge(object):
         return 'Edge(v=%s, w=%s)' % self.vertices()
 
 
-class AdjacencyListImpl(Graph):
-    def __init__(self, vertices=[], edges=[]):
-        self._impl = {}
+class ImplBase(Graph):
+
+    def __init__(self):
+        self._impl = None
+
+    @abstractmethod
+    def add_edge(self, edge):
+        pass
+
+    @abstractmethod
+    def add_vertex(self, vertex):
+        pass
+
+    def order(self):
+        return len(self._impl)
+
+    def size(self):
+        return sum([len(edges) for edges in self._impl.values()]) // 2
+
+    def init_impl(self, vertices, edges):
         for vertex in vertices:
             self.add_vertex(vertex)
         for edge in edges:
             self.add_edge(edge)
 
-    def add_edge(self, edge, **kwargs):
+
+class AdjacencyListImpl(ImplBase):
+
+    def __init__(self, vertices=[], edges=[]):
+        super(AdjacencyListImpl, self).__init__()
+        self._impl = {}
+        self.init_impl(vertices, edges)
+
+    def add_edge(self, edge):
         head, tail = edge.vertices()
         self._impl[head].append(tail)
         self._impl[tail].append(head)
@@ -48,23 +76,14 @@ class AdjacencyListImpl(Graph):
         assert vertex not in self._impl, 'Duplicate vertex.'
         self._impl[vertex] = []
 
-    def order(self):
-        return len(self._impl)
 
-    def size(self):
-        return sum([len(edges) for edges in self._impl.values()]) // 2
-
-
-class DictOfDictsImpl(Graph):
+class DictOfDictsImpl(ImplBase):
 
     def __init__(self, vertices=[], edges=[]):
         """Create a new graph with vertices and edges."""
+        super(DictOfDictsImpl, self).__init__()
         self._impl = {}
-
-        for vertex in vertices:
-            self.add_vertex(vertex)
-        for edge in edges:
-            self.add_edge(edge)
+        self.init_impl(vertices, edges)
 
     def add_vertex(self, vertex):
         assert vertex not in self._impl, "Duplicate vertex."
@@ -75,11 +94,6 @@ class DictOfDictsImpl(Graph):
         self._impl[head][tail] = edge
         self._impl[tail][head] = edge
 
-    def order(self):
-        return len(self._impl)
-
-    def size(self):
-        return sum([len(edges) for edges in self._impl.values()]) // 2
 
 
 
