@@ -44,7 +44,6 @@ class AdjacencyListImpl(Graph):
         self._impl[head].append(tail)
         self._impl[tail].append(head)
 
-
     def add_vertex(self, vertex):
         assert vertex not in self._impl, 'Duplicate vertex.'
         self._impl[vertex] = []
@@ -54,5 +53,34 @@ class AdjacencyListImpl(Graph):
 
     def size(self):
         return sum([len(edges) for edges in self._impl.values()]) // 2
-  
-  
+
+
+class DictOfDictsImpl(Graph):
+
+    def __init__(self, vertices=[], edges=[]):
+        """Create a new graph with vertices and edges."""
+        self._impl = {}
+
+        for vertex in vertices:
+            self.add_vertex(vertex)
+        for edge in edges:
+            self.add_edge(edge)
+
+    def add_vertex(self, vertex):
+        assert vertex not in self._impl, "Duplicate vertex."
+        self._impl[vertex] = {}
+
+    def add_edge(self, edge):
+        head, tail = edge.vertices()
+        self._impl[head][tail] = edge
+        self._impl[tail][head] = edge
+
+    def order(self):
+        return len(self._impl)
+
+    def size(self):
+        return sum([len(edges) for edges in self._impl.values()]) // 2
+
+
+
+

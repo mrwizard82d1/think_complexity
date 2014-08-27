@@ -75,8 +75,46 @@ class AdjacencyListTest(unittest.TestCase):
     def test_when_add_many_edges(self):
         vertices = [graph.Vertex(v) for v in [2, 3, 5, 8]]
         edges = [graph.Edge(edge) for edge in
-                 [(v, w) for v, w in zip(vertices, vertices[1:])]]
+                 [(vertices[0], w) for w in vertices[1:]]]
         self.cut = graph.AdjacencyListImpl(vertices, edges)
+        self.assertEquals(len(vertices), self.cut.order())
+        self.assertEquals(len(edges), self.cut.size())
+
+
+class DictOfDictsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.cut = graph.DictOfDictsImpl()
+
+    def test_when_empty_graph_then_empty(self):
+        self.assertEquals(0, self.cut.order())
+        self.assertEquals(0, self.cut.size())
+
+    def test_when_add_vertex_then_vertex_no_edges(self):
+        self.cut.add_vertex(graph.Vertex(1))
+        self.assertEquals(1, self.cut.order())
+        self.assertEqual(0, self.cut.size())
+
+    def test_when_add_vertex_twice_then_error(self):
+        vertex_label = 'lorem'
+        vertex = graph.Vertex(vertex_label)
+        self.cut.add_vertex(vertex)
+        self.assertRaises(AssertionError, self.cut.add_vertex, vertex)
+
+    def test_when_add_one_edge(self):
+        vertices = [graph.Vertex(v) for v in [3, 5]]
+        for v in vertices:
+            self.cut.add_vertex(v)
+        self.cut.add_edge(graph.Edge(vertices))
+
+        self.assertEquals(len(vertices), self.cut.order())
+        self.assertEquals(1, self.cut.size())
+
+    def test_when_add_many_edges(self):
+        vertices = [graph.Vertex(v) for v in [2, 3, 5, 8]]
+        edges = [graph.Edge(edge) for edge in
+                 [(vertices[0], w) for w in vertices[1:]]]
+        self.cut = graph.DictOfDictsImpl(vertices, edges)
         self.assertEquals(len(vertices), self.cut.order())
         self.assertEquals(len(edges), self.cut.size())
 
