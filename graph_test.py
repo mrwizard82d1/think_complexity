@@ -119,6 +119,30 @@ class DictOfDictsTest(unittest.TestCase):
         self.assertEquals(len(edges), self.cut.size())
 
 
+class Example22Test(unittest.TestCase):
+    def test_find_edge(self):
+        vertex_labels = ['lorem', 'ipsum', 'dolor', 'sit', 'proveniemus',
+                         'augustis', 'lapi']
+        vertices = [graph.Vertex(vl) for vl in vertex_labels]
+        edge_indices = [(6, 4), (0, 4), (0, 3), (3, 1), (1, 5), (2, 6)]
+        edges = [graph.Edge(tuple([vertices[i] for i in index_pair]))
+                 for index_pair in edge_indices]
+        cut_adj = graph.AdjacencyListImpl(vertices, edges)
+        cut_dod = graph.DictOfDictsImpl(vertices, edges)
+
+        self.assertEqual(edges[0].vertices(),
+                         cut_adj.find_edge(vertices[6],
+                                           vertices[4]).vertices())
+        self.assertEqual(edges[5], cut_adj.find_edge(vertices[2], vertices[6]))
+        self.assertIsNone(cut_adj.find_edge(vertices[0], vertices[5]))
+        self.assertIsNone(cut_adj.find_edge(vertices[1], vertices[4]))
+
+        self.assertEqual(edges[2], cut_dod.find_edge(vertices[3], vertices[0]))
+        self.assertEqual(edges[3], cut_dod.find_edge(vertices[3], vertices[1]))
+        self.assertIsNone(cut_dod.find_edge(vertices[5], vertices[0]))
+        self.assertIsNone(cut_dod.find_edge(vertices[6], vertices[3]))
+
+
 if __name__ == '__main__':
     unittest.main()
 

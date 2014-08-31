@@ -13,6 +13,9 @@ class Graph(object):
 
     def add_edge(self, edge):
         raise NotImplementedError
+    
+    def find_edge(self, head, tail):
+        raise NotImplementedError
 
 
 class Vertex(object):
@@ -30,9 +33,14 @@ class Edge(object):
     def vertices(self):
         return self._vertices
 
+    def __eq__(self, another):
+        if self.__class__ != another.__class__:
+            return False
+        return self.vertices() == another.vertices()
+
     def __repr__(self):
         return 'Edge(v=%s, w=%s)' % self.vertices()
-
+        
 
 class ImplBase(Graph):
 
@@ -46,7 +54,7 @@ class ImplBase(Graph):
     @abstractmethod
     def add_vertex(self, vertex):
         pass
-
+        
     def order(self):
         return len(self._impl)
 
@@ -76,6 +84,17 @@ class AdjacencyListImpl(ImplBase):
         assert vertex not in self._impl, 'Duplicate vertex.'
         self._impl[vertex] = []
 
+    def find_edge(self, head, tail):
+        try:
+            tails = self._impl[head]
+            try:
+                tail_index = tails.index(tail)
+                return Edge((head, tails[tail_index]))
+            except ValueError:
+                return None
+        except KeyError:
+            return None
+
 
 class DictOfDictsImpl(ImplBase):
 
@@ -94,7 +113,11 @@ class DictOfDictsImpl(ImplBase):
         self._impl[head][tail] = edge
         self._impl[tail][head] = edge
 
-
+    def find_edge(self, head, tail):
+        try:
+            return self._impl[head][tail]
+        except KeyError:
+            return None
 
 
 
