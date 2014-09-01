@@ -17,6 +17,13 @@ class Graph(object):
     def find_edge(self, head, tail):
         raise NotImplementedError
 
+    def remove_edge(self, to_remove):
+        """"Removes to_remove from the graph.
+
+        If to_remove is NOT in the graph, this function DOES NOT raise an
+        error."""
+        raise NotImplementedError
+
 
 class Vertex(object):
     def __init__(self, label=''):
@@ -95,6 +102,15 @@ class AdjacencyListImpl(ImplBase):
         except KeyError:
             return None
 
+    def remove_edge(self, to_remove):
+        vertices_to_remove = to_remove.vertices()
+        if vertices_to_remove[0] in self._impl:
+            try:
+                self._impl[vertices_to_remove[0]].remove(vertices_to_remove[1])
+                self._impl[vertices_to_remove[1]].remove(vertices_to_remove[0])
+            except ValueError:
+                pass
+
 
 class DictOfDictsImpl(ImplBase):
 
@@ -119,5 +135,12 @@ class DictOfDictsImpl(ImplBase):
         except KeyError:
             return None
 
-
+    def remove_edge(self, to_remove):
+        vertices_to_remove = to_remove.vertices()
+        if vertices_to_remove[0] in self._impl:
+            try:
+                del self._impl[vertices_to_remove[0]][vertices_to_remove[1]]
+                del self._impl[vertices_to_remove[1]][vertices_to_remove[0]]
+            except KeyError:
+                pass
 

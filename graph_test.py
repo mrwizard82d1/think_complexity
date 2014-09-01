@@ -131,7 +131,6 @@ class Example22Test(unittest.TestCase):
         self.cut_adj = graph.AdjacencyListImpl(self.vertices, self.edges)
         self.cut_dod = graph.DictOfDictsImpl(self.vertices, self.edges)
 
-
     def test_find_edge(self):
 
         self.assertEqual(self.edges[0].vertices(),
@@ -154,8 +153,35 @@ class Example22Test(unittest.TestCase):
         self.assertIsNone(self.cut_dod.find_edge(self.vertices[5],
                                                  self.vertices[0])) 
         self.assertIsNone(self.cut_dod.find_edge(self.vertices[6],
-                                                 self.vertices[3])) 
+                                                 self.vertices[3]))
 
+    def test_given_edges_in_graph_when_remove_then_removed(self):
+        self.cut_adj.remove_edge(self.edges[3])
+        self.assertIsNone(self.cut_adj.find_edge(self.vertices[3],
+                                                 self.vertices[1]))
+        self.assertEqual(self.edges[2],
+                         self.cut_adj.find_edge(self.vertices[0],
+                                                self.vertices[3]))
+
+        self.cut_dod.remove_edge(self.edges[1])
+        self.assertIsNone(self.cut_dod.find_edge(self.vertices[4],
+                                                 self.vertices[1]))
+        self.assertEqual(self.edges[0],
+                         self.cut_dod.find_edge(self.vertices[6],
+                                                self.vertices[4]))
+
+    def test_given_edges_not_in_curve_when_remove_then_no_error(self):
+        to_remove_adj = graph.Edge((0, 5))
+        try:
+            self.cut_adj.remove_edge(to_remove_adj)
+        except Exception as ex:
+            self.fail('Unexpected exception: %s' % ex)
+
+        to_remove_dod = graph.Edge((6, 3))
+        try:
+            self.cut_dod.remove_edge(to_remove_dod)
+        except Exception as ex:
+            self.fail('Unexpected exception: %s' % ex)
 
 if __name__ == '__main__':
     unittest.main()
